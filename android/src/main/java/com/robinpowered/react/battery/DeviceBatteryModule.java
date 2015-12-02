@@ -75,6 +75,26 @@ public class DeviceBatteryModule extends ReactContextBaseJavaModule {
     batteryStatus = this.activity.registerReceiver(batteryStateReceiver, batteryFilter);
   }
 
+  @ReactMethod
+  public void getBatteryLevel(Promise promise) {
+    if (batteryStatus != null) {
+      float batteryPercentage = getBatteryPrecentageFromIntent(batteryStatus);
+      promise.resolve((double) batteryPercentage);
+    } else {
+      promise.reject("Battery manager is not active");
+    }
+  }
+
+  @ReactMethod
+  public void isCharging(Promise promise) {
+    if (batteryStatus != null) {
+      boolean isCharging = getIsChangingFromIntent(batteryStatus);
+      promise.resolve(isCharging);
+    } else {
+      promise.reject("Battery manager is not active");
+    }
+  }
+
   @Override
   public String getName() {
     return "DeviceBattery";
