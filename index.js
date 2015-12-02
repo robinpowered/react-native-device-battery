@@ -1,5 +1,4 @@
-var { NativeModules } = require('react-native');
-var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
+var { NativeModules, RCTDeviceEventEmitter } = require('react-native');
 var {DeviceBattery} = NativeModules;
 
 export default {
