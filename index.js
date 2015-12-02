@@ -1,2 +1,14 @@
 var { NativeModules } = require('react-native');
-module.exports = NativeModules.DeviceBattery;
+var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
+var {DeviceBattery} = NativeModules;
+
+export default {
+  isCharging: DeviceBattery.isCharging,
+  getBatteryLevel: DeviceBattery.getBatteryLevel,
+  addListener: (callback) => {
+    return RTCDeviceEventEmitter.addListener('batteryChange', callback);
+  },
+  removeListener: (listener) => {
+    RTCDeviceEventEmitter.removeListener('batteryChange', listener);
+  }
+};
