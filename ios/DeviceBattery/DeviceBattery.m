@@ -33,22 +33,22 @@
 
 RCT_EXPORT_MODULE();
 
-RCT_EXPORT_METHOD(isCharging,
-                  resolver:(RCTPromiseResolveBlock)resolve
-                  rejecter:(RCTPromiseRejectBlock)reject) {
+RCT_REMAP_METHOD(isCharging,
+                 isChargingResolver:(RCTPromiseResolveBlock)resolve
+                 isChargingRejector:(RCTPromiseRejectBlock)reject) {
     UIDeviceBatteryState batteryState = [UIDevice currentDevice].batteryState;
     if (batteryState == UIDeviceBatteryStateCharging) {
-        resolve(YES);
+        resolve(@YES);
     } else {
-        resolve(NO);
+        resolve(@NO);
     }
 }
 
-RCT_EXPORT_METHOD(getBatteryLevel,
-                  resolver:(RCTPromiseResolveBlock)resolve
-                  rejecter:(RCTPromiseRejectBlock)reject) {
+RCT_REMAP_METHOD(getBatteryLevel,
+                 batteryLevelResolver:(RCTPromiseResolveBlock)resolve
+                 batteryLevelRejector:(RCTPromiseRejectBlock)reject) {
     float batteryLevel = [UIDevice currentDevice].batteryLevel;
-    resolve(batteryLevel);
+    resolve(@(batteryLevel));
 }
 
 -(void)batteryLevelChanged:(NSNotification*)notification {
