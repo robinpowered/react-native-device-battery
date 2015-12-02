@@ -62,10 +62,13 @@ public class DeviceBatteryModule extends ReactContextBaseJavaModule {
     batteryStateReceiver = new BroadcastReceiver() {
       @Override
       public void onReceive(Context context, Intent intent) {
-        WritableNativeMap params = getJSMap(intent);
-        reactApplicationContext
-          .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-          .emit(EVENT_NAME, params);
+        // only emit an event if the Catalyst instance is avialable
+        if (reactApplicationContext.hasActiveCatalystInstance()) {
+          WritableNativeMap params = getJSMap(intent);
+          reactApplicationContext
+            .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+            .emit(EVENT_NAME, params);
+        }
       }
     };
     IntentFilter batteryFilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
