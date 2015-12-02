@@ -1,0 +1,25 @@
+{
+  "name": "react-native-device-battery",
+  "version": "0.1.0",
+  "description": "Observe battery state changes in your react native application",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/robinpowered/react-native-device-battery.git"
+  },
+  "keywords": [
+    "react",
+    "native",
+    "battery",
+    "device"
+  ],
+  "author": "Atticus White <contact@atticuswhite.com> (http://atticuswhite.com/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/robinpowered/react-native-device-battery/issues"
+  },
+  "homepage": "https://github.com/robinpowered/react-native-device-battery#readme"
+}

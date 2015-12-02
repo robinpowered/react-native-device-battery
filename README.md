@@ -9,7 +9,7 @@ Get and observe the devices battery level and charging status
 TBD
 
 ### Android
-TBD
+
 
 ## Example Usage
 ```js
