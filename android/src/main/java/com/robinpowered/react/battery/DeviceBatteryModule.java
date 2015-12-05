@@ -14,6 +14,7 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.facebook.react.bridge.LifecycleEventListener;
 
 // @link http://developer.android.com/training/monitoring-device-state/battery-monitoring.html
 public class DeviceBatteryModule extends ReactContextBaseJavaModule {
@@ -22,15 +23,18 @@ public class DeviceBatteryModule extends ReactContextBaseJavaModule {
   public static final String BATTERY_LEVEL_KEY = "level";
 
   private ReactApplicationContext reactApplicationContext;
-  private Activity activity = null;
+  protected Activity activity = null;
   private Intent batteryStatus = null;
-  private BroadcastReceiver batteryStateReceiver;
+  private BroadcastReceiver batteryStateReceiver = null;
+  private Listener listener;
 
 
   public DeviceBatteryModule(ReactApplicationContext reactApplicationContext, Activity activity) {
     super(reactApplicationContext);
     this.reactApplicationContext = reactApplicationContext;
     this.activity = activity;
+    this.listener = new Listener();
+    reactApplicationContext.addLifecycleEventListener(this.listener);
     this.registerBatteryStateReceiver();
   }
 
@@ -58,7 +62,7 @@ public class DeviceBatteryModule extends ReactContextBaseJavaModule {
     return params;
   }
 
-  private void registerBatteryStateReceiver() {
+  protected void registerBatteryStateReceiver() {
     batteryStateReceiver = new BroadcastReceiver() {
       @Override
       public void onReceive(Context context, Intent intent) {
@@ -98,5 +102,25 @@ public class DeviceBatteryModule extends ReactContextBaseJavaModule {
   @Override
   public String getName() {
     return "DeviceBattery";
+  }
+
+  class Listener implements LifecycleEventListener {
+    public void onHostResume() {
+      if (batteryStateReceiver == null) {
+        registerBatteryStateReceiver();
+      }
+    }
+    public void onHostPause() {
+      if (batteryStateReceiver != null) {
+        activity.unregisterReceiver(batteryStateReceiver);
+        batteryStateReceiver = null;
+      }
+    }
+    public void onHostDestroy() {
+      if (batteryStateReceiver != null) {
+        activity.unregisterReceiver(batteryStateReceiver);
+        batteryStateReceiver = null;
+      }
+    }
   }
 }
