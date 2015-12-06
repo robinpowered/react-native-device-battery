@@ -9,6 +9,7 @@ import android.os.BatteryManager;
 
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
+import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
@@ -16,26 +17,22 @@ import com.facebook.react.bridge.Promise;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.bridge.LifecycleEventListener;
 
+import javax.annotation.Nullable;
+
 // @link http://developer.android.com/training/monitoring-device-state/battery-monitoring.html
-public class DeviceBatteryModule extends ReactContextBaseJavaModule {
+public class DeviceBatteryModule extends ReactContextBaseJavaModule
+  implements LifecycleEventListener {
+
   public static final String EVENT_NAME = "batteryChange";
   public static final String IS_CHARGING_KEY = "charging";
   public static final String BATTERY_LEVEL_KEY = "level";
 
-  private ReactApplicationContext reactApplicationContext;
-  protected Activity activity = null;
   private Intent batteryStatus = null;
-  private BroadcastReceiver batteryStateReceiver = null;
-  private Listener listener;
+  private @Nullable PowerConnectionReceiver batteryStateReceiver;
 
 
   public DeviceBatteryModule(ReactApplicationContext reactApplicationContext, Activity activity) {
     super(reactApplicationContext);
-    this.reactApplicationContext = reactApplicationContext;
-    this.activity = activity;
-    this.listener = new Listener();
-    reactApplicationContext.addLifecycleEventListener(this.listener);
-    this.registerBatteryStateReceiver();
   }
 
   private float getBatteryPrecentageFromIntent(Intent intent) {
@@ -62,21 +59,14 @@ public class DeviceBatteryModule extends ReactContextBaseJavaModule {
     return params;
   }
 
-  protected void registerBatteryStateReceiver() {
-    batteryStateReceiver = new BroadcastReceiver() {
-      @Override
-      public void onReceive(Context context, Intent intent) {
-        // only emit an event if the Catalyst instance is avialable
-        if (reactApplicationContext.hasActiveCatalystInstance()) {
-          WritableNativeMap params = getJSMap(intent);
-          reactApplicationContext
-            .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-            .emit(EVENT_NAME, params);
-        }
-      }
-    };
-    IntentFilter batteryFilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
-    batteryStatus = this.activity.registerReceiver(batteryStateReceiver, batteryFilter);
+  public void notifyBatteryStateChanged(Intent intent) {
+    // only emit an event if the Catalyst instance is avialable
+    if (getReactApplicationContext().hasActiveCatalystInstance()) {
+      WritableNativeMap params = getJSMap(intent);
+      getReactApplicationContext()
+              .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+              .emit(EVENT_NAME, params);
+    }
   }
 
   @ReactMethod
@@ -99,28 +89,55 @@ public class DeviceBatteryModule extends ReactContextBaseJavaModule {
     }
   }
 
+  private void maybeRegisterReceiver() {
+    if (batteryStateReceiver != null) {
+      return;
+    }
+    batteryStateReceiver = new PowerConnectionReceiver();
+    IntentFilter filter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
+    batteryStatus = getReactApplicationContext().registerReceiver(batteryStateReceiver, filter);
+  }
+
+  private void maybeUnregisterReceiver() {
+    if (batteryStateReceiver == null) {
+      return;
+    }
+    getReactApplicationContext().unregisterReceiver(batteryStateReceiver);
+    batteryStateReceiver = null;
+    batteryStatus = null;
+  }
+
   @Override
   public String getName() {
     return "DeviceBattery";
   }
 
-  class Listener implements LifecycleEventListener {
-    public void onHostResume() {
-      if (batteryStateReceiver == null) {
-        registerBatteryStateReceiver();
-      }
+  @Override
+  public void initialize() {
+    getReactApplicationContext().addLifecycleEventListener(this);
+    maybeRegisterReceiver();
+  }
+
+  @Override
+  public void onHostResume() {
+    maybeRegisterReceiver();
+  }
+  @Override
+  public void onHostPause() {
+    maybeUnregisterReceiver();
     }
-    public void onHostPause() {
-      if (batteryStateReceiver != null) {
-        activity.unregisterReceiver(batteryStateReceiver);
-        batteryStateReceiver = null;
-      }
-    }
-    public void onHostDestroy() {
-      if (batteryStateReceiver != null) {
-        activity.unregisterReceiver(batteryStateReceiver);
-        batteryStateReceiver = null;
-      }
+  @Override
+  public void onHostDestroy() {
+    maybeUnregisterReceiver();
+  }
+
+  class PowerConnectionReceiver extends BroadcastReceiver {
+    private DeviceBatteryModule mBatteryModule;
+
+    @Override
+    public void onReceive(Context context, Intent intent) {
+      notifyBatteryStateChanged(intent);
     }
   }
+
 }
