@@ -52,7 +52,6 @@ public class DeviceBatteryModule extends ReactContextBaseJavaModule
   private WritableNativeMap getJSMap (Intent intent) {
     float batteryPercentage = getBatteryPrecentageFromIntent(intent);
     boolean isCharging = getIsChangingFromIntent(intent);
-    System.out.println("BATTERY LEVEL CHANGE DETECTED");
     WritableNativeMap params = new WritableNativeMap();
     params.putBoolean(IS_CHARGING_KEY, isCharging);
     params.putDouble(BATTERY_LEVEL_KEY, (double) batteryPercentage);
