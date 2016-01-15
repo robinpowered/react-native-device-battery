@@ -8,6 +8,6 @@ export default {
     return DeviceEventEmitter.addListener('batteryChange', callback);
   },
   removeListener: (listener) => {
-    DeviceEventEmitter.removeListener('batteryChange', listener);
+    // DeviceEventEmitter.removeListener('batteryChange', listener);
   }
 };
