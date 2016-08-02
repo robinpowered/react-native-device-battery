@@ -1,6 +1,5 @@
 package com.robinpowered.react.battery;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -31,7 +30,7 @@ public class DeviceBatteryModule extends ReactContextBaseJavaModule
   private @Nullable PowerConnectionReceiver batteryStateReceiver;
 
 
-  public DeviceBatteryModule(ReactApplicationContext reactApplicationContext, Activity activity) {
+  public DeviceBatteryModule(ReactApplicationContext reactApplicationContext) {
     super(reactApplicationContext);
   }
 

@@ -14,16 +14,10 @@ import java.util.Collections;
 import java.util.List;
 
 public class DeviceBatteryPackage implements ReactPackage {
-  private Activity mActivity = null;
-
-  public DeviceBatteryPackage(Activity activity) {
-    mActivity = activity;
-  }
-
   @Override
   public List<NativeModule> createNativeModules(ReactApplicationContext reactApplicationContext) {
     List<NativeModule> modules = new ArrayList<NativeModule>();
-    modules.add(new DeviceBatteryModule(reactApplicationContext, mActivity));
+    modules.add(new DeviceBatteryModule(reactApplicationContext));
     return modules;
   }
 
