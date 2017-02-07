@@ -7,8 +7,6 @@
 //
 
 #import "DeviceBattery.h"
-#import "RCTBridge.h"
-#import "RCTEventDispatcher.h"
 
 @implementation DeviceBattery
 @synthesize bridge = _bridge;
