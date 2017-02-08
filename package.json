@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/tsella/react-native-device-battery.git"
+    "url": "git+ssh://git@github.com/robinpowered/react-native-device-battery.git"
   },
   "keywords": [
     "react",
