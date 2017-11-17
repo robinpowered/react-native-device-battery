@@ -38,6 +38,10 @@ static const NSString *BATTERY_CHANGE_EVENT = @"batteryChanged";
 {
     return YES;
 }
+-(dispatch_queue_t)methodQueue
+{
+    return dispatch_get_main_queue();
+}
 
 RCT_REMAP_METHOD(isCharging,
                  isChargingResolver:(RCTPromiseResolveBlock)resolve
@@ -71,4 +75,3 @@ RCT_REMAP_METHOD(getBatteryLevel,
 }
 
 @end
-
