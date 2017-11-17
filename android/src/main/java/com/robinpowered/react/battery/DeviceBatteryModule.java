@@ -13,7 +13,7 @@ import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.Promise;
-import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.facebook.react.modules.core.RCTNativeAppEventEmitter;
 import com.facebook.react.bridge.LifecycleEventListener;
 
 import javax.annotation.Nullable;
@@ -62,7 +62,7 @@ public class DeviceBatteryModule extends ReactContextBaseJavaModule
     if (getReactApplicationContext().hasActiveCatalystInstance()) {
       WritableNativeMap params = getJSMap(intent);
       getReactApplicationContext()
-              .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+              .getJSModule(RCTNativeAppEventEmitter.class)
               .emit(EVENT_NAME, params);
     }
   }

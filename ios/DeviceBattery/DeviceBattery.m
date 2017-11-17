@@ -1,20 +1,16 @@
-//
-//  DeviceBattery.m
-//  DeviceBattery
-//
-//  Created by Atticus White on 12/1/15.
-//  Copyright © 2015 Atticus White. All rights reserved.
-//
-
 #import "DeviceBattery.h"
 
 @implementation DeviceBattery
-@synthesize bridge = _bridge;
+RCT_EXPORT_MODULE();
+
+static const NSString *BATTERY_CHANGE_EVENT = @"batteryChanged";
 
 - (instancetype)init
 {
     if((self = [super init])) {
-        [[UIDevice currentDevice] setBatteryMonitoringEnabled:YES];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [[UIDevice currentDevice] setBatteryMonitoringEnabled:YES];
+        });
         
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(batteryLevelChanged:)
@@ -23,17 +19,29 @@
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(batteryLevelChanged:)
                                                      name:UIDeviceBatteryStateDidChangeNotification
-                                                   object: nil];
+                                                   object:nil];
     }
     return self;
 }
 
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
 
-RCT_EXPORT_MODULE();
+- (NSArray<NSString *> *)supportedEvents {
+    return @[BATTERY_CHANGE_EVENT];
+}
+
+// UIDevice (UIKit) may only be accessed on main thread
++(BOOL)requiresMainQueueSetup
+{
+    return YES;
+}
 
 RCT_REMAP_METHOD(isCharging,
                  isChargingResolver:(RCTPromiseResolveBlock)resolve
-                 isChargingRejector:(RCTPromiseRejectBlock)reject) {
+                 isChargingRejecter:(RCTPromiseRejectBlock)reject) {
     UIDeviceBatteryState batteryState = [UIDevice currentDevice].batteryState;
     if (batteryState == UIDeviceBatteryStateCharging) {
         resolve(@YES);
@@ -43,8 +51,9 @@ RCT_REMAP_METHOD(isCharging,
 }
 
 RCT_REMAP_METHOD(getBatteryLevel,
-                 batteryLevelResolver:(RCTPromiseResolveBlock)resolve
-                 batteryLevelRejector:(RCTPromiseRejectBlock)reject) {
+                 getBatteryLevelResolver:(RCTPromiseResolveBlock)resolve
+                 getBatteryLevelRejecter:(RCTPromiseRejectBlock)reject)
+{
     float batteryLevel = [UIDevice currentDevice].batteryLevel;
     resolve(@(batteryLevel));
 }
@@ -57,12 +66,9 @@ RCT_REMAP_METHOD(getBatteryLevel,
     
     [payload setObject:[NSNumber numberWithBool:isCharging] forKey:@"charging"];
     [payload setObject:[NSNumber numberWithFloat:batteryLevel] forKey:@"level"];
-    [self.bridge.eventDispatcher sendDeviceEventWithName:@"batteryChange" body:payload];
-}
-
-- (void)dealloc
-{
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    
+    [self sendEventWithName:BATTERY_CHANGE_EVENT body:payload];
 }
 
 @end
+

@@ -1,17 +1,13 @@
-//
-//  DeviceBattery.h
-//  DeviceBattery
-//
-//  Created by Atticus White on 12/1/15.
-//  Copyright © 2015 Atticus White. All rights reserved.
-//
-
-
 #import <Foundation/Foundation.h>
-#import <React/RCTBridgeModule.h>
-#import <React/RCTBridge.h>
-#import <React/RCTEventDispatcher.h>
 
-@interface DeviceBattery : NSObject<RCTBridgeModule>
+#if __has_include(<React/RCTAssert.h>)
+#import <React/RCTBridgeModule.h>
+#import <React/RCTEventEmitter.h>
+#else // backward compat for rn pre 0.40
+#import "RCTBridgeModule.h"
+#import "RCTEventEmitter.h"
+#endif
+
+@interface DeviceBattery : RCTEventEmitter <RCTBridgeModule>
 
 @end
