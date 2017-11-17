@@ -5,11 +5,13 @@
 //  Created by Atticus White on 12/1/15.
 //  Copyright © 2015 Atticus White. All rights reserved.
 //
+//  2017/02/08 @tsella
+//  - fix duplicate includes
+//  - use EventEmitter instead of deprecated EventDispatcher
 
 #import "DeviceBattery.h"
 
 @implementation DeviceBattery
-@synthesize bridge = _bridge;
 
 - (instancetype)init
 {
@@ -23,7 +25,7 @@
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(batteryLevelChanged:)
                                                      name:UIDeviceBatteryStateDidChangeNotification
-                                                   object: nil];
+                                                   object:nil];
     }
     return self;
 }
@@ -49,6 +51,10 @@ RCT_REMAP_METHOD(getBatteryLevel,
     resolve(@(batteryLevel));
 }
 
+- (NSArray<NSString *> *)supportedEvents {
+    return @[@"batteryChange"];
+}
+
 -(void)batteryLevelChanged:(NSNotification*)notification {
     UIDeviceBatteryState batteryState = [UIDevice currentDevice].batteryState;
     NSMutableDictionary* payload = [NSMutableDictionary dictionaryWithCapacity:2];
@@ -57,7 +63,8 @@ RCT_REMAP_METHOD(getBatteryLevel,
     
     [payload setObject:[NSNumber numberWithBool:isCharging] forKey:@"charging"];
     [payload setObject:[NSNumber numberWithFloat:batteryLevel] forKey:@"level"];
-    [self.bridge.eventDispatcher sendDeviceEventWithName:@"batteryChange" body:payload];
+
+    [self sendEventWithName:@"batteryChange" body:payload];
 }
 
 - (void)dealloc
