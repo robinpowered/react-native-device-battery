@@ -33,6 +33,11 @@ static const NSString *BATTERY_CHANGE_EVENT = @"batteryChanged";
     return @[BATTERY_CHANGE_EVENT];
 }
 
+- (NSDictionary *)constantsToExport
+{
+    return @{@"BATTERY_CHANGE_EVENT": BATTERY_CHANGE_EVENT};
+}
+
 // UIDevice (UIKit) may only be accessed on main thread
 +(BOOL)requiresMainQueueSetup
 {
@@ -75,3 +80,4 @@ RCT_REMAP_METHOD(getBatteryLevel,
 }
 
 @end
+
