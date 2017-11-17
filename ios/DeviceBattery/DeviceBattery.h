@@ -1,14 +1,3 @@
-//
-//  DeviceBattery.h
-//  DeviceBattery
-//
-//  Created by Atticus White on 12/1/15.
-//  Copyright © 2015 Atticus White. All rights reserved.
-//
-//  2017/02/08 @tsella
-//  - support rn 0.40+
-//  - use EventEmitter instead of deprecated EventDispatcher
-
 #import <Foundation/Foundation.h>
 
 #if __has_include(<React/RCTAssert.h>)

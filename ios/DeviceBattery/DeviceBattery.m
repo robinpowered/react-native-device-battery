@@ -1,14 +1,3 @@
-//
-//  DeviceBattery.m
-//  DeviceBattery
-//
-//  Created by Atticus White on 12/1/15.
-//  Copyright © 2015 Atticus White. All rights reserved.
-//
-//  2017/02/08 @tsella
-//  - fix duplicate includes
-//  - use EventEmitter instead of deprecated EventDispatcher
-
 #import "DeviceBattery.h"
 
 @implementation DeviceBattery
