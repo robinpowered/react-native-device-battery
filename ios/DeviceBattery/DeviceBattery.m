@@ -33,6 +33,12 @@ static const NSString *BATTERY_CHANGE_EVENT = @"batteryChanged";
     return @[BATTERY_CHANGE_EVENT];
 }
 
+// UIDevice (UIKit) may only be accessed on main thread
++(BOOL)requiresMainQueueSetup
+{
+    return YES;
+}
+
 RCT_REMAP_METHOD(isCharging,
                  resolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject) {
