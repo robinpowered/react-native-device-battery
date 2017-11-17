@@ -13,10 +13,14 @@
 
 @implementation DeviceBattery
 
+static const NSString *BATTERY_CHANGE_EVENT = @"batteryChanged";
+
 - (instancetype)init
 {
     if((self = [super init])) {
-        [[UIDevice currentDevice] setBatteryMonitoringEnabled:YES];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [[UIDevice currentDevice] setBatteryMonitoringEnabled:YES];
+        });
         
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(batteryLevelChanged:)
@@ -52,7 +56,7 @@ RCT_REMAP_METHOD(getBatteryLevel,
 }
 
 - (NSArray<NSString *> *)supportedEvents {
-    return @[@"batteryChange"];
+    return @[BATTERY_CHANGE_EVENT];
 }
 
 -(void)batteryLevelChanged:(NSNotification*)notification {
@@ -64,7 +68,7 @@ RCT_REMAP_METHOD(getBatteryLevel,
     [payload setObject:[NSNumber numberWithBool:isCharging] forKey:@"charging"];
     [payload setObject:[NSNumber numberWithFloat:batteryLevel] forKey:@"level"];
 
-    [self sendEventWithName:@"batteryChange" body:payload];
+    [self sendEventWithName:BATTERY_CHANGE_EVENT body:payload];
 }
 
 - (void)dealloc

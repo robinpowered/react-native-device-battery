@@ -13,11 +13,9 @@
 
 #if __has_include(<React/RCTAssert.h>)
 #import <React/RCTBridgeModule.h>
-#import <React/RCTBridge.h>
 #import <React/RCTEventEmitter.h>
 #else // backward compat for rn pre 0.40
 #import "RCTBridgeModule.h"
-#import "RCTBridge.h"
 #import "RCTEventEmitter.h"
 #endif
 
