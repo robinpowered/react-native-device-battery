@@ -12,6 +12,7 @@
 #import "DeviceBattery.h"
 
 @implementation DeviceBattery
+RCT_EXPORT_MODULE();
 
 static const NSString *BATTERY_CHANGE_EVENT = @"batteryChanged";
 
@@ -34,12 +35,18 @@ static const NSString *BATTERY_CHANGE_EVENT = @"batteryChanged";
     return self;
 }
 
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
 
-RCT_EXPORT_MODULE();
+- (NSArray<NSString *> *)supportedEvents {
+    return @[BATTERY_CHANGE_EVENT];
+}
 
 RCT_REMAP_METHOD(isCharging,
-                 isChargingResolver:(RCTPromiseResolveBlock)resolve
-                 isChargingRejector:(RCTPromiseRejectBlock)reject) {
+                 resolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject) {
     UIDeviceBatteryState batteryState = [UIDevice currentDevice].batteryState;
     if (batteryState == UIDeviceBatteryStateCharging) {
         resolve(@YES);
@@ -49,14 +56,11 @@ RCT_REMAP_METHOD(isCharging,
 }
 
 RCT_REMAP_METHOD(getBatteryLevel,
-                 batteryLevelResolver:(RCTPromiseResolveBlock)resolve
-                 batteryLevelRejector:(RCTPromiseRejectBlock)reject) {
+                 resolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject)
+{
     float batteryLevel = [UIDevice currentDevice].batteryLevel;
     resolve(@(batteryLevel));
-}
-
-- (NSArray<NSString *> *)supportedEvents {
-    return @[BATTERY_CHANGE_EVENT];
 }
 
 -(void)batteryLevelChanged:(NSNotification*)notification {
@@ -69,11 +73,6 @@ RCT_REMAP_METHOD(getBatteryLevel,
     [payload setObject:[NSNumber numberWithFloat:batteryLevel] forKey:@"level"];
 
     [self sendEventWithName:BATTERY_CHANGE_EVENT body:payload];
-}
-
-- (void)dealloc
-{
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 @end
