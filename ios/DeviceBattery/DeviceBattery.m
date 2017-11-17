@@ -40,8 +40,8 @@ static const NSString *BATTERY_CHANGE_EVENT = @"batteryChanged";
 }
 
 RCT_REMAP_METHOD(isCharging,
-                 resolver:(RCTPromiseResolveBlock)resolve
-                 rejecter:(RCTPromiseRejectBlock)reject) {
+                 isChargingResolver:(RCTPromiseResolveBlock)resolve
+                 isChargingRejecter:(RCTPromiseRejectBlock)reject) {
     UIDeviceBatteryState batteryState = [UIDevice currentDevice].batteryState;
     if (batteryState == UIDeviceBatteryStateCharging) {
         resolve(@YES);
@@ -51,8 +51,8 @@ RCT_REMAP_METHOD(isCharging,
 }
 
 RCT_REMAP_METHOD(getBatteryLevel,
-                 resolver:(RCTPromiseResolveBlock)resolve
-                 rejecter:(RCTPromiseRejectBlock)reject)
+                 getBatteryLevelResolver:(RCTPromiseResolveBlock)resolve
+                 getBatteryLevelRejecter:(RCTPromiseRejectBlock)reject)
 {
     float batteryLevel = [UIDevice currentDevice].batteryLevel;
     resolve(@(batteryLevel));
@@ -66,8 +66,9 @@ RCT_REMAP_METHOD(getBatteryLevel,
     
     [payload setObject:[NSNumber numberWithBool:isCharging] forKey:@"charging"];
     [payload setObject:[NSNumber numberWithFloat:batteryLevel] forKey:@"level"];
-
+    
     [self sendEventWithName:BATTERY_CHANGE_EVENT body:payload];
 }
 
 @end
+
