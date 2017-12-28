@@ -58,6 +58,7 @@ public class DeviceBatteryModule extends ReactContextBaseJavaModule
   }
 
   public void notifyBatteryStateChanged(Intent intent) {
+    batteryStatus = intent;
     // only emit an event if the Catalyst instance is avialable
     if (getReactApplicationContext().hasActiveCatalystInstance()) {
       WritableNativeMap params = getJSMap(intent);
