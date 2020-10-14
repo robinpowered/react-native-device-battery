@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.BroadcastReceiver;
 import android.os.BatteryManager;
+import android.util.Log;
 
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -13,8 +14,12 @@ import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.Promise;
+import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.modules.core.RCTNativeAppEventEmitter;
 import com.facebook.react.bridge.LifecycleEventListener;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.annotation.Nullable;
 
@@ -58,13 +63,25 @@ public class DeviceBatteryModule extends ReactContextBaseJavaModule
   }
 
   public void notifyBatteryStateChanged(Intent intent) {
+    batteryStatus = intent;
     // only emit an event if the Catalyst instance is avialable
     if (getReactApplicationContext().hasActiveCatalystInstance()) {
       WritableNativeMap params = getJSMap(intent);
-      getReactApplicationContext()
-              .getJSModule(RCTNativeAppEventEmitter.class)
-              .emit(EVENT_NAME, params);
+      try {
+        getReactApplicationContext()
+                .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                .emit(EVENT_NAME, params);
+      } catch (Exception e) {
+        Log.e(getName(), "notifyBatteryStateChanged called before bundle loaded");
+      }
     }
+  }
+
+  @Override
+  public Map<String, Object> getConstants() {
+    final Map<String, Object> constants = new HashMap<>();
+    constants.put("BATTERY_CHANGE_EVENT", EVENT_NAME);
+    return constants;
   }
 
   @ReactMethod
