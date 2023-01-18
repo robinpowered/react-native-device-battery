@@ -1,6 +1,6 @@
 {
   "name": "react-native-device-battery",
-  "version": "2.1.0",
+  "version": "3.0.0",
   "description": "Observe battery state changes in your react native application",
   "main": "index.js",
   "scripts": {
